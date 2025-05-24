@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PodTrimmer</title>
+  <script defer src="app.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans p-4 max-w-xl mx-auto">
+  <h1 class="text-2xl font-bold mb-4 text-center">PodTrimmer</h1>
+  <h2 class="text-lg text-center mb-6 text-gray-600 font-medium">The easy way to pick selected episodes of a podcast</h2>
+
+  <div class="mb-4">
+    <label for="rssUrl" class="block mb-1 font-medium">Enter RSS Feed URL:</label>
+    <input id="rssUrl" type="text" placeholder="https://example.com/feed.xml"
+           class="w-full border rounded p-2" />
+    <button onclick="fetchRSS()"
+            class="mt-2 w-full bg-indigo-600 text-white font-semibold py-2 px-4 rounded hover:bg-indigo-700">
+      Fetch Feed
+    </button>
+  </div>
+
+  <div id="episodeControls" class="flex justify-between mb-4 hidden">
+    <button onclick="selectAll()" class="text-sm text-indigo-600 hover:underline">Select All</button>
+    <button onclick="selectNone()" class="text-sm text-red-600 hover:underline">Select None</button>
+  </div>
+
+  <ul id="episodeList" class="space-y-2 mb-6"></ul>
+
+  <button id="downloadBtn" onclick="generateXML()"
+          class="w-full bg-green-600 text-white font-semibold py-2 px-4 rounded hover:bg-green-700 hidden">
+    Download Trimmed XML
+  </button>
+</body>
+</html>
