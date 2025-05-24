@@ -94,4 +94,34 @@ function generateXML() {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+
+  // Show upload button after generating XML
+  document.getElementById('uploadBtn').classList.remove('hidden');
+  window.generatedXML = fullXML; // Save for upload
+}
+
+async function uploadXML() {
+  const xmlString = window.generatedXML;
+  if (!xmlString) {
+    document.getElementById('uploadStatus').textContent = "Please generate XML first.";
+    return;
+  }
+  document.getElementById('uploadStatus').textContent = "Uploading...";
+  try {
+    const response = await fetch('https://podtrimmer-backend.onrender.com/upload', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/xml'
+      },
+      body: xmlString
+    });
+    if (response.ok) {
+      const result = await response.json();
+      document.getElementById('uploadStatus').textContent = "Upload successful! " + (result.url ? `URL: ${result.url}` : "");
+    } else {
+      document.getElementById('uploadStatus').textContent = "Upload failed.";
+    }
+  } catch (e) {
+    document.getElementById('uploadStatus').textContent = "Error uploading: " + e.message;
+  }
 }
