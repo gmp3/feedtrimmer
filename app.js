@@ -2,8 +2,12 @@ let episodes = [];
 let selected = new Set();
 
 async function fetchRSS() {
+  document.getElementById('errorMsg').textContent = ""; // Clear previous error
   const url = document.getElementById('rssUrl').value.trim();
-  if (!url) return alert("Enter a valid URL.");
+  if (!url) {
+    document.getElementById('errorMsg').textContent = "Enter a valid URL.";
+    return;
+  }
 
   try {
     const response = await fetch(url);
@@ -28,10 +32,9 @@ async function fetchRSS() {
     // Show controls
     document.getElementById('episodeControls').classList.remove('hidden');
     document.getElementById('downloadBtn').classList.remove('hidden');
-
   } catch (e) {
     console.error(e);
-    alert("Failed to fetch or parse RSS feed.");
+    document.getElementById('errorMsg').textContent = "Failed to fetch or parse RSS feed. Please check the URL and try again.";
   }
 }
 
