@@ -1,6 +1,6 @@
-# PodTrimmer
+# FeedTrimmer
 
-PodTrimmer is a simple web tool to help you pick selected episodes from a podcast RSS feed and generate a trimmed XML file.
+FeedTrimmer is a simple web tool to help you pick selected episodes from a podcast RSS feed and generate a trimmed XML file.
 
 ## Features
 
@@ -26,7 +26,7 @@ PodTrimmer is a simple web tool to help you pick selected episodes from a podcas
 ## Project Structure
 
 ```
-/podtrimmer
+/feedtrimmer
   ├── index.html
   ├── app.js
   ├── README.md

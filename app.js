@@ -29,9 +29,9 @@ async function fetchRSS() {
     selected = new Set(episodes.map((_, i) => i));
     renderEpisodeList();
 
-    // Show controls
+    // Show controls and upload button
     document.getElementById('episodeControls').classList.remove('hidden');
-    document.getElementById('downloadBtn').classList.remove('hidden');
+    document.getElementById('uploadBtn').classList.remove('hidden');
   } catch (e) {
     console.error(e);
     document.getElementById('errorMsg').textContent = "Failed to fetch or parse RSS feed. Please check the URL and try again.";
@@ -73,8 +73,11 @@ function selectNone() {
   renderEpisodeList();
 }
 
-function generateXML() {
-  if (selected.size === 0) return alert("No episodes selected.");
+function generateAndUploadXML() {
+  if (selected.size === 0) {
+    alert("No episodes selected.");
+    return;
+  }
 
   const selectedItems = [...selected].map(i => episodes[i].xml).join("\n    ");
   const fullXML = `<?xml version="1.0" encoding="UTF-8"?>
@@ -87,20 +90,8 @@ function generateXML() {
   </channel>
 </rss>`;
 
-  const blob = new Blob([fullXML], { type: "application/rss+xml" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'trimmed_feed.xml';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-
-  // Show upload button after generating XML
-  document.getElementById('uploadBtn').classList.remove('hidden');
   window.generatedXML = fullXML; // Save for upload
+  uploadXML();
 }
 
 async function uploadXML() {
@@ -111,20 +102,25 @@ async function uploadXML() {
   }
   document.getElementById('uploadStatus').textContent = "Uploading...";
   try {
-    const response = await fetch('https://podtrimmer-backend.onrender.com/upload', {
+    const response = await fetch('https://feedtrimmer-backend.onrender.com/upload', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/xml'
       },
       body: xmlString
     });
+    console.log("Upload request sent. Status:", response.status, response.statusText);
     if (response.ok) {
       const result = await response.json();
       document.getElementById('uploadStatus').textContent = "Upload successful! " + (result.url ? `URL: ${result.url}` : "");
+      console.log("Upload successful! Response:", result);
     } else {
+      const errorText = await response.text();
       document.getElementById('uploadStatus').textContent = "Upload failed.";
+      console.error("Upload failed:", response.status, response.statusText, errorText);
     }
   } catch (e) {
     document.getElementById('uploadStatus').textContent = "Error uploading: " + e.message;
+    console.error("Error uploading:", e);
   }
 }
