@@ -201,7 +201,9 @@ function extractFromApplePodcastUrl(url) {
 
 async function getFeedUrlFromApplePodcastId(applePodcastId) {
   try {
-    const response = await fetch(`https://itunes.apple.com/lookup?id=${applePodcastId}`);
+    const response = await fetch(`https://itunes.apple.com/lookup?id=${applePodcastId}`, {
+  mode: 'no-cors'
+});
     if (!response.ok) throw new Error("Failed to fetch from iTunes API");
     const results = await response.json();
     // console.log("iTunes API results:", results.results[0].feedUrl);
