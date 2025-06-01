@@ -1,3 +1,5 @@
+const FEEDTRIMMER_BACKEND_URL = "https://feedtrimmer-backend.onrender.com";
+
 let titleNode = null; // To store the channel title from the RSS feed
 let imageNode = null; // To store the image URL from the RSS feed
 let episodes = [];
@@ -145,7 +147,7 @@ async function uploadXML() {
   }
   document.getElementById('uploadStatus').textContent = "Uploading...";
   try {
-    const response = await fetch('https://feedtrimmer-backend.onrender.com/upload', {
+    const response = await fetch(`${FEEDTRIMMER_BACKEND_URL}/upload`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/xml'
@@ -201,18 +203,29 @@ function extractFromApplePodcastUrl(url) {
 
 async function getFeedUrlFromApplePodcastId(applePodcastId) {
   try {
-    const response = await fetch(`https://itunes.apple.com/lookup?id=${applePodcastId}`, {
-  mode: 'no-cors'
-});
+    const response = await fetch(`${FEEDTRIMMER_BACKEND_URL}/applepodcasts?id=${applePodcastId}`);
     if (!response.ok) throw new Error("Failed to fetch from iTunes API");
     const results = await response.json();
-    // console.log("iTunes API results:", results.results[0].feedUrl);
-    if (results.resultCount > 0 && results.results[0].feedUrl) {
-      return results.results[0].feedUrl;
+    console.log("iTunes API results:", results.feedUrl);
+    if (results.feedUrl) {
+      return results.feedUrl;
     }
-    return null;
+    throw new Error("Feed URL not found in iTunes API response");
   } catch (e) {
     console.error("Error fetching feedUrl:", e);
     return null;
   }
 }
+
+window.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const response = await fetch(`${FEEDTRIMMER_BACKEND_URL}/healthz`);
+    if (response.ok) {
+      console.log("Backend health check: OK");
+    } else {
+      console.warn("Backend health check failed:", response.status, response.statusText);
+    }
+  } catch (e) {
+    console.error("Backend health check error:", e);
+  }
+});
